@@ -3,8 +3,8 @@
 A multi-module Maven project. Each module extends the core functionality of [Apache Spark](http://spark.apache.org) as described below.
 
 ## Modules
- Overview |groupId  | artifactId | packaging
- - | - | - | -
+ Overview | groupId  | artifactId | packaging
+ -------- | -------- | ---------- | ---------
 Parent module | com.synsys.org.apache.spark | spark | pom
 A Spark Streaming module that ingests data from an [Apache Camel](http://camel.apache.org/) component. Any of the many Apache Camel [components](http://camel.apache.org/components.html) supporting message consumption can be used |com.synsys.org.apache.spark | spark-streaming-camel_2.10 | jar
 
