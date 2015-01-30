@@ -1,5 +1,13 @@
 *.class
+*.bak
 *.log
+*.swp
+*.tmp
+*.tlog
+ajcore.*
+bin/**
+tmp/**
+.DS_Store
 
 # sbt specific
 .cache/
@@ -15,3 +23,18 @@ project/plugins/project/
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
+scalastyle-output.xml
+checkpoint/**
+
+# Eclipse
+.buildpath
+.classpath
+.cproject
+.externalToolBuilders/
+.factorypath
+.loadpath
+.metadata
+.project
+.settings/
+*.launch
+*.pydevproject
