@@ -16,9 +16,9 @@
 
 	<groupId>com.synsys.org.apache.spark</groupId>
 	<artifactId>spark</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Spark Extensions</name>
+	<name>Apache Spark Extensions</name>
 	<url>https://github.com/synsys/spark</url>
 
 	<licenses>
@@ -33,8 +33,18 @@
 		<connection>scm:git:git@github.com:synsys/spark.git</connection>
 		<developerConnection>scm:git:git@github.com:synsys/spark.git</developerConnection>
 		<url>scm:git:git@github.com:synsys/spark.git</url>
-		<tag>HEAD</tag>
 	</scm>
+    
+    <developers>
+        <developer>
+            <id>ossdev</id>
+            <name>OSS Developer</name>
+            <email>ossdev@synsys.com</email>
+            <organization>Synergy Systems Limited</organization>
+            <organizationUrl>http://www.synsys.com</organizationUrl>
+            <timezone>Europe/London</timezone>
+        </developer>
+    </developers>
 
 	<issueManagement>
 		<system>Issues</system>
@@ -63,11 +73,10 @@
 		<scala-macros.version>2.0.1</scala-macros.version>
 
 		<spark.version>1.2.0</spark.version>
-
-		<scalaTestArg1>-Xmx${MaxMem}</scalaTestArg1>
-		<scalaTestArg2>-XX:MaxPermSize=${MaxPermGen}</scalaTestArg2>
-		<scalaTestArg3>-XX:ReservedCodeCacheSize=${ReservedCodeCache}</scalaTestArg3>
-		<scalaTestArgs>${scalaTestArg1} ${scalaTestArg2} ${scalaTestArg3}</scalaTestArgs>
+        
+        <scalaTestArg1>-Xmx${MaxMem}</scalaTestArg1>
+        <scalaTestArg2>${scalaTestArg1} -XX:MaxPermSize=${MaxPermGen}</scalaTestArg2>
+        <scalaTestArgs>${scalaTestArg2} -XX:ReservedCodeCacheSize=${ReservedCodeCache}</scalaTestArgs>
 	</properties>
 
 	<dependencyManagement>
@@ -299,7 +308,25 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>2.10.1</version>
-				</plugin>
+				</plugin> 
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.5</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                            <configuration>
+                                <keyname>${gpg.keyname}</keyname>
+                                <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -323,7 +350,11 @@
 			<plugin>
 				<groupId>org.scalatest</groupId>
 				<artifactId>scalatest-maven-plugin</artifactId>
-			</plugin>
+			</plugin> 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+            </plugin>
 		</plugins>
 	</build>
 

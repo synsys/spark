@@ -15,5 +15,5 @@ Builds require [maven](http://maven.apache.org/) version 3.1.1 or higher.
 From a command line run:
 ```
 cd /project/root
-mvn package 
+mvn install 
 ```
