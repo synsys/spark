@@ -17,7 +17,7 @@
 
     <groupId>com.synsys.org.apache.spark</groupId>
     <artifactId>spark</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>Apache Spark Extensions</name>
     <url>https://github.com/synsys/spark</url>

@@ -38,3 +38,4 @@ checkpoint/**
 .settings/
 *.launch
 *.pydevproject
+/pom.xml.versionsBackup
