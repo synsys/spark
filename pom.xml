@@ -20,6 +20,7 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>Apache Spark Extensions</name>
+    <description>Parent POM for Apache Spark extension modules</description>
     <url>https://github.com/synsys/spark</url>
 
     <licenses>

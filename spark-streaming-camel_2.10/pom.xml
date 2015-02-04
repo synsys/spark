@@ -25,6 +25,7 @@
 	<artifactId>spark-streaming-camel_2.10</artifactId>
 	<packaging>jar</packaging>
 	<name>Spark : Streaming : Camel</name>
+    <description>Apache Camel support for Apache Spark Streaming</description>
 	<url>https://github.com/synsys/spark</url>
 
 	<properties>
