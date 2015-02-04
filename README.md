@@ -15,5 +15,9 @@ Builds require [maven](http://maven.apache.org/) version 3.1.1 or higher.
 From a command line run:
 ```
 cd /project/root
-mvn install 
+mvn install
 ```
+
+## Releases
+
+Released artifacts are deployed to [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ccom.synsys.org.apache.spark) 

@@ -17,7 +17,7 @@
 
 package com.synsys.org.apache.spark.streaming
 
-/**
+/** 
  * A Spark Streaming module that ingests data from an 
  * [[http://camel.apache.org/ Apache Camel]] component. Any of the many
  * [[http://camel.apache.org/components.html Apache Camel components]] supporting message 
