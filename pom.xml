@@ -17,7 +17,7 @@
 
     <groupId>com.synsys.org.apache.spark</groupId>
     <artifactId>spark</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Apache Spark Extensions</name>
     <description>Parent POM for Apache Spark extension modules</description>
@@ -83,7 +83,7 @@
         <scala.binary.version>2.10</scala.binary.version>
         <scala-macros.version>2.0.1</scala-macros.version>
 
-        <spark.version>1.2.0</spark.version>
+        <spark.version>1.5.2</spark.version>
 
         <scalaTestArg1>-Xmx${MaxMem}</scalaTestArg1>
         <scalaTestArg2>${scalaTestArg1} -XX:MaxPermSize=${MaxPermGen}</scalaTestArg2>

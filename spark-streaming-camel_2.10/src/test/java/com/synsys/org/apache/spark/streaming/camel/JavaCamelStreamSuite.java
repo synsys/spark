@@ -40,9 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import com.esotericsoftware.minlog.Log;
 import com.synsys.org.apache.spark.streaming.LocalJavaStreamingContext;
-import com.synsys.org.apache.spark.streaming.camel.CamelService;
-import com.synsys.org.apache.spark.streaming.camel.CamelUtils;
-import com.synsys.org.apache.spark.streaming.camel.MessagePart;
 
 public class JavaCamelStreamSuite extends LocalJavaStreamingContext {
 
@@ -59,11 +56,18 @@ public class JavaCamelStreamSuite extends LocalJavaStreamingContext {
 		MessagePart messagePart = MessagePart.BODY;
 		StorageLevel storageLevel = StorageLevel.MEMORY_ONLY_SER();
 
-		// tests the API, does not actually test data receiving
+		// tests the vanilla API, does not actually test data receiving
 		assertNotNull(CamelUtils.createStream(ssc, componentUri));
 		assertNotNull(CamelUtils.createStream(ssc, componentUri, messagePart));
 		assertNotNull(CamelUtils.createStream(ssc, componentUri, storageLevel));
 		assertNotNull(CamelUtils.createStream(ssc, componentUri, messagePart,
+				storageLevel));
+		
+		// tests the generic API, does not actually test data receiving
+		assertNotNull(CamelUtils.createStream(String.class, ssc, componentUri));
+		assertNotNull(CamelUtils.createStream(String.class, ssc, componentUri, messagePart));
+		assertNotNull(CamelUtils.createStream(String.class, ssc, componentUri, storageLevel));
+		assertNotNull(CamelUtils.createStream(String.class, ssc, componentUri, messagePart,
 				storageLevel));
 	}
 
@@ -119,24 +123,24 @@ public class JavaCamelStreamSuite extends LocalJavaStreamingContext {
 			throws Exception {
 		final AtomicLong dataCounter = new AtomicLong(0);
 
-		JavaReceiverInputDStream<Serializable> stream = CamelUtils
-				.createStream(ssc, consumerUri, messagePart,
+		JavaReceiverInputDStream<String> stream = CamelUtils
+				.createStream(String.class, ssc, consumerUri, messagePart,
 						StorageLevel.MEMORY_ONLY_SER());
 
-		JavaDStream<Serializable> mapped = stream
-				.map(new Function<Serializable, Serializable>() {
+		JavaDStream<String> mapped = stream
+				.map(new Function<String, String>() {
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					public Serializable call(Serializable v1) throws Exception {
+					public String call(String v1) throws Exception {
 						return v1 + ".";
 					}
 				});
-		mapped.foreachRDD(new Function<JavaRDD<Serializable>, Void>() {
+		mapped.foreachRDD(new Function<JavaRDD<String>, Void>() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public Void call(final JavaRDD<Serializable> rdd) throws Exception {
+			public Void call(final JavaRDD<String> rdd) throws Exception {
 				final long count = rdd.count();
 				dataCounter.addAndGet(count);
 				return null;

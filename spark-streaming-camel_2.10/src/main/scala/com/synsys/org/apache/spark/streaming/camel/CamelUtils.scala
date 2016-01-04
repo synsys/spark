@@ -21,10 +21,10 @@ import java.io.Serializable;
 
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.StreamingContext
-import org.apache.spark.streaming.api.java.{JavaReceiverInputDStream, JavaStreamingContext, JavaDStream}
+import org.apache.spark.streaming.api.java.{ JavaReceiverInputDStream, JavaStreamingContext, JavaDStream }
 
 import scala.reflect.ClassTag
-import org.apache.spark.streaming.dstream.{ReceiverInputDStream, DStream}
+import org.apache.spark.streaming.dstream.{ ReceiverInputDStream, DStream }
 
 object CamelUtils {
   /**
@@ -32,15 +32,83 @@ object CamelUtils {
    * @param ssc           StreamingContext object
    * @param componentUri  Uri of the Apache Camel component
    * @param messagePart   The part(s) of the message to store. Defaults to MessagePart.BODY
-   * @param storageLevel  RDD storage level. Defaults to StorageLevel.MEMORY_AND_DISK_SER_2.
+   * @param storageLevel  RDD storage level. Defaults to StorageLevel.MEMORY_AND_DISK_SER_2
+   * @tparam V            The type of the message value
    */
-  def createStream(
-      ssc: StreamingContext,
-      componentUri: String,
-      messagePart: MessagePart = MessagePart.BODY,
-      storageLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK_SER_2
-    ): ReceiverInputDStream[Serializable] = {
-    new CamelInputDStream(ssc, componentUri, messagePart, storageLevel)
+  def createStream[V: ClassTag](
+    ssc: StreamingContext,
+    componentUri: String,
+    messagePart: MessagePart = MessagePart.BODY,
+    storageLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK_SER_2): ReceiverInputDStream[V] = {
+    new CamelInputDStream[V](ssc, componentUri, messagePart, storageLevel)
+  }
+
+  /**
+   * Create an input stream that receives messages from an Apache Camel component.
+   * Storage level of the data will be the default StorageLevel.MEMORY_AND_DISK_SER_2.
+   * @param valueClass    The type of the message value
+   * @param jssc          JavaStreamingContext object
+   * @param componentUri  Uri of the Apache Camel component
+   * @param messagePart   The part(s) of the message to receive
+   */
+  def createStream[V](
+    valueClass: Class[V],
+    jssc: JavaStreamingContext,
+    componentUri: String,
+    messagePart: MessagePart): JavaReceiverInputDStream[V] = {
+    implicit val valueClassTag: ClassTag[V] = ClassTag(valueClass)
+    createStream[V](jssc.ssc, componentUri, messagePart)
+  }
+
+  /**
+   * Create an input stream that receives messages from an Apache Camel component.
+   * The stored Message part is MessagePart.BODY
+   * The storage level of the data will be the default StorageLevel.MEMORY_AND_DISK_SER_2.
+   * @param valueClass    The type of the message value
+   * @param jssc          JavaStreamingContext object
+   * @param componentUri  Uri of the Apache Camel component
+   */
+  def createStream[V](
+    valueClass: Class[V],
+    jssc: JavaStreamingContext,
+    componentUri: String): JavaReceiverInputDStream[V] = {
+    implicit val valueClassTag: ClassTag[V] = ClassTag(valueClass)
+    createStream[V](jssc.ssc, componentUri)
+  }
+
+  /**
+   * Create an input stream that receives messages from an Apache Camel component.
+   * The stored Message part is MessagePart.BODY
+   * @param valueClass    The type of the message value
+   * @param jssc          JavaStreamingContext object
+   * @param componentUri  Uri of the Apache Camel component
+   * @param storageLevel  RDD storage level.
+   */
+  def createStream[V](
+    valueClass: Class[V],
+    jssc: JavaStreamingContext,
+    componentUri: String,
+    storageLevel: StorageLevel): JavaReceiverInputDStream[V] = {
+    implicit val valueClassTag: ClassTag[V] = ClassTag(valueClass)
+    createStream[V](jssc.ssc, componentUri, MessagePart.BODY, storageLevel)
+  }
+
+  /**
+   * Create an input stream that receives messages from an Apache Camel component.
+   * @param valueClass    The type of the message value
+   * @param jssc          JavaStreamingContext object
+   * @param componentUri  Uri of the Apache Camel component
+   * @param messagePart   The part(s) of the message to receive
+   * @param storageLevel  RDD storage level
+   */
+  def createStream[V](
+    valueClass: Class[V],
+    jssc: JavaStreamingContext,
+    componentUri: String,
+    messagePart: MessagePart,
+    storageLevel: StorageLevel): JavaReceiverInputDStream[V] = {
+    implicit val valueClassTag: ClassTag[V] = ClassTag(valueClass)
+    createStream[V](jssc.ssc, componentUri, messagePart, storageLevel)
   }
 
   /**
@@ -49,45 +117,48 @@ object CamelUtils {
    * @param jssc          JavaStreamingContext object
    * @param componentUri  Uri of the Apache Camel component
    * @param messagePart   The part(s) of the message to receive
+   *
+   * @deprecated Use the equivalent generic method above
    */
   def createStream(
-      jssc: JavaStreamingContext,
-      componentUri: String,
-      messagePart: MessagePart
-    ): JavaReceiverInputDStream[Serializable] = {
+    jssc: JavaStreamingContext,
+    componentUri: String,
+    messagePart: MessagePart): JavaReceiverInputDStream[Serializable] = {
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[Serializable]]
-    createStream(jssc.ssc, componentUri, messagePart)
+    createStream[Serializable](jssc.ssc, componentUri, messagePart)
   }
-  
+
   /**
    * Create an input stream that receives messages from an Apache Camel component.
-   * The stored Message part is MessagePart.BODY 
+   * The stored Message part is MessagePart.BODY
    * The storage level of the data will be the default StorageLevel.MEMORY_AND_DISK_SER_2.
    * @param jssc          JavaStreamingContext object
    * @param componentUri  Uri of the Apache Camel component
+   *
+   * @deprecated Use the equivalent generic method above
    */
   def createStream(
-      jssc: JavaStreamingContext,
-      componentUri: String
-    ): JavaReceiverInputDStream[Serializable] = {
+    jssc: JavaStreamingContext,
+    componentUri: String): JavaReceiverInputDStream[Serializable] = {
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[Serializable]]
-    createStream(jssc.ssc, componentUri)
+    createStream[Serializable](jssc.ssc, componentUri)
   }
-  
+
   /**
    * Create an input stream that receives messages from an Apache Camel component.
-   * The stored Message part is MessagePart.BODY 
+   * The stored Message part is MessagePart.BODY
    * @param jssc          JavaStreamingContext object
    * @param componentUri  Uri of the Apache Camel component
-   * @param storageLevel  RDD storage level.
+   * @param storageLevel  RDD storage level
+   *
+   * @deprecated Use the equivalent generic method above
    */
   def createStream(
-      jssc: JavaStreamingContext,
-      componentUri: String,
-      storageLevel: StorageLevel 
-    ): JavaReceiverInputDStream[Serializable] = {
+    jssc: JavaStreamingContext,
+    componentUri: String,
+    storageLevel: StorageLevel): JavaReceiverInputDStream[Serializable] = {
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[Serializable]]
-    createStream(jssc.ssc, componentUri, MessagePart.BODY, storageLevel)
+    createStream[Serializable](jssc.ssc, componentUri, MessagePart.BODY, storageLevel)
   }
 
   /**
@@ -95,15 +166,16 @@ object CamelUtils {
    * @param jssc          JavaStreamingContext object
    * @param componentUri  Uri of the Apache Camel component
    * @param messagePart   The part(s) of the message to receive
-   * @param storageLevel  RDD storage level.
+   * @param storageLevel  RDD storage level
+   *
+   * @deprecated Use the equivalent generic method above
    */
   def createStream(
-      jssc: JavaStreamingContext,
-      componentUri: String,
-      messagePart: MessagePart,
-      storageLevel: StorageLevel 
-    ): JavaReceiverInputDStream[Serializable] = {
+    jssc: JavaStreamingContext,
+    componentUri: String,
+    messagePart: MessagePart,
+    storageLevel: StorageLevel): JavaReceiverInputDStream[Serializable] = {
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[Serializable]]
-    createStream(jssc.ssc, componentUri, messagePart, storageLevel)
+    createStream[Serializable](jssc.ssc, componentUri, messagePart, storageLevel)
   }
 }

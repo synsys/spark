@@ -85,7 +85,7 @@ package com.synsys.org.apache.spark.streaming
  * ...and [[CamelInputDStream]] uses the same `URI` in the constructor...
  * {{{new CamelInputDStream("direct-vm:spark", MessagePart.BODY, StorageLevel.MEMORY_ONLY)}}}
  * 
- * When running on a cluster a network protocol is required. A queuing protocol, such as JMS,
+ * When running on a cluster a network protocol is required. A queueing protocol, such as JMS,
  * has the useful side effect of automatically load balancing the cluster.
  *  
  * @see [[http://camel.apache.org/components.html Apache Camel Components]]

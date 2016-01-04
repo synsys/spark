@@ -16,6 +16,8 @@
  */
 package com.synsys.org.apache.spark.streaming.camel
 
+import scala.reflect.ClassTag
+
 import java.io.Serializable
 import java.util.concurrent.CountDownLatch
 
@@ -40,38 +42,38 @@ import scala.util.{ Failure, Success, Try }
  * An input stream that consumes Apache Camel [[org.apache.camel.Message]]s from
  * the specified component URI.
  */
-private[streaming] class CamelInputDStream(
+private[streaming] class CamelInputDStream[V: ClassTag](
   @transient ssc_ : StreamingContext,
   componentUri: String,
   messagePart: MessagePart,
-  storageLevel: StorageLevel) extends ReceiverInputDStream[Serializable](ssc_) with Logging {
+  storageLevel: StorageLevel) extends ReceiverInputDStream[V](ssc_) with Logging {
 
-  def getReceiver(): Receiver[Serializable] = {
+  def getReceiver(): Receiver[V] = {
     new CamelReceiver(componentUri, messagePart, storageLevel)
   }
 }
 
-private[streaming] class CamelReceiver(
+private[streaming] class CamelReceiver[V: ClassTag](
   componentUri: String,
   messagePart: MessagePart,
-  storageLevel: StorageLevel) extends Receiver[Serializable](storageLevel) with Logging {
+  storageLevel: StorageLevel) extends Receiver[V](storageLevel) with Logging {
   @transient
   var service: CamelService = null
 
-  def createBuilder: RoutesBuilder = new RouteBuilder() {
+  def createBuilder (implicit tag: ClassTag[V]): RoutesBuilder = new RouteBuilder() {
     componentUri process (new Processor {
-      def process(exchange: Exchange) {
+      def process(exchange: Exchange) {      
         val tryStore: Try[Unit] = Try(
           messagePart match {
-            case MessagePart.ALL => store(exchange.getIn(classOf[Serializable]))
+            case MessagePart.ALL => store(exchange.getIn(tag.runtimeClass).asInstanceOf[V])
             case MessagePart.MANDATORY_BODY =>
               if (null == exchange.getIn.getBody) {
-                throw new InvalidPayloadException(exchange, classOf[Serializable])
+                throw new InvalidPayloadException(exchange, tag.runtimeClass)
               }
-              store(exchange.getIn.getMandatoryBody(classOf[Serializable]))
+              store(exchange.getIn.getMandatoryBody(tag.runtimeClass).asInstanceOf[V])
             case MessagePart.BODY =>
               if (null != exchange.getIn.getBody) {
-                store(exchange.getIn.getBody(classOf[Serializable]))
+                store(exchange.getIn.getBody(tag.runtimeClass).asInstanceOf[V])
               }
           })
         tryStore match {
