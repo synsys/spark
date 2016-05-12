@@ -20,4 +20,13 @@ mvn install
 
 ## Releases
 
-Released artifacts are deployed to [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ccom.synsys.org.apache.spark) 
+Released artifacts are deployed to [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ccom.synsys.org.apache.spark)
+
+## Documentation
+
+The `package.scala` and `package.info` files in each package provide an overview for Scala and 
+Java languages respectively. For more detail see the class comments.
+
+The associated Scala and Java unit tests provide working code examples that can be used as templates
+for your own endeavours.
+
